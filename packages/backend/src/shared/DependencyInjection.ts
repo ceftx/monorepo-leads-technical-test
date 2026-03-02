@@ -7,6 +7,7 @@ import { RegisterUser } from "../application/use-cases/auth/RegisterUser.js";
 import { LoginUser } from "../application/use-cases/auth/LoginUser.js";
 import { CreateLead } from "../application/use-cases/leads/CreateLead.js";
 import { GetLeadsByUser } from "../application/use-cases/leads/GetLeadsByUser.js";
+import { UpdateLead } from "../application/use-cases/leads/UpdateLead.js";
 import { UpdateLeadStatus } from "../application/use-cases/leads/UpdateLeadStatus.js";
 import { DeleteLead } from "../application/use-cases/leads/DeleteLead.js";
 import { GetUserMetrics } from "../application/use-cases/dashboard/GetUserMetrics.js";
@@ -43,6 +44,7 @@ export class DependencyContainer {
     // === Use Cases - Leads ===
     private readonly createLeadUseCase: CreateLead;
     private readonly getLeadsByUserUseCase: GetLeadsByUser;
+    private readonly updateLeadUseCase: UpdateLead;
     private readonly updateLeadStatusUseCase: UpdateLeadStatus;
     private readonly deleteLeadUseCase: DeleteLead;
 
@@ -84,6 +86,11 @@ export class DependencyContainer {
         );
 
         this.getLeadsByUserUseCase = new GetLeadsByUser(this.leadRepository);
+
+        this.updateLeadUseCase = new UpdateLead(
+            this.leadRepository,
+            this.userRepository,
+        );
 
         this.updateLeadStatusUseCase = new UpdateLeadStatus(
             this.leadRepository,
@@ -150,6 +157,10 @@ export class DependencyContainer {
 
     getGetLeadsByUserUseCase(): GetLeadsByUser {
         return this.getLeadsByUserUseCase;
+    }
+
+    getUpdateLeadUseCase(): UpdateLead {
+        return this.updateLeadUseCase;
     }
 
     getUpdateLeadStatusUseCase(): UpdateLeadStatus {

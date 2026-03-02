@@ -63,6 +63,23 @@ router.get("/", LeadController.list);
 router.get("/:id", LeadController.getById);
 
 /**
+ * PUT /leads/:id
+ * #swagger.tags = ['Leads']
+ * #swagger.summary = 'Actualizar lead completo'
+ * #swagger.description = 'Vendedor: solo sus leads. Admin: cualquier lead'
+ * #swagger.security = [{ "bearerAuth": [] }]
+ * #swagger.requestBody = {
+ *   required: true,
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/UpdateLeadRequest" }
+ *     }
+ *   }
+ * }
+ */
+router.put("/:id", LeadController.update);
+
+/**
  * PATCH /leads/:id/status
  * #swagger.tags = ['Leads']
  * #swagger.summary = 'Actualizar estado de un lead'

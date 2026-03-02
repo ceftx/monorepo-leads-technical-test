@@ -31,7 +31,7 @@ interface LeadFormProps {
 // ==============================|| LEAD FORM ||============================== //
 
 export default function LeadForm({ open, onClose, onSuccess, lead }: LeadFormProps) {
-  const { createLead } = useLeads();
+  const { createLead, updateLead } = useLeads();
   const { showSnackbar } = useSnackbar();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -87,8 +87,8 @@ export default function LeadForm({ open, onClose, onSuccess, lead }: LeadFormPro
       };
 
       if (lead) {
-        // TODO: Implement update functionality when backend supports it
-        throw new Error('Update functionality not yet implemented');
+        await updateLead(lead.id, leadData);
+        showSnackbar('Lead updated successfully', 'success');
       } else {
         await createLead(leadData);
         showSnackbar('Lead created successfully', 'success');

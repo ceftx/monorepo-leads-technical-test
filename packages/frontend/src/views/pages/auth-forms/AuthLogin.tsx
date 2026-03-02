@@ -13,7 +13,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 
 // project imports
@@ -41,8 +40,8 @@ export default function AuthLogin() {
   const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     control,
@@ -67,25 +66,41 @@ export default function AuthLogin() {
   };
 
   const onSubmit = async (data: LoginFormData) => {
-    setError(null);
+    console.log('🔐 Intentando login con:', data.email);
+    setErrorMessage(null);
     setIsLoading(true);
 
     try {
       await login(data.email, data.password);
+      console.log('✅ Login exitoso, navegando a dashboard');
       navigate('/dashboard');
     } catch (err: any) {
-      console.error('Login error:', err);
-      setError(err?.response?.data?.error?.message || 'Invalid email or password');
+      console.error('❌ Login error:', err);
+      const error = err?.response?.data?.error?.message || 'Invalid email or password';
+      console.log('📢 Mostrando error:', error);
+      setErrorMessage(error);
+      console.log('📢 ErrorMessage seteado, esperando render...');
+
+      // Forzar que React renderice antes de cualquier otra cosa
+      setTimeout(() => {
+        console.log('✅ Error debería estar visible ahora');
+      }, 100);
     } finally {
       setIsLoading(false);
+      console.log('🏁 Finally ejecutado, isLoading=false');
     }
   };
 
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit(onSubmit)(e);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {error && (
-        <Box sx={{ mb: 2 }}>
-          <Alert severity="error">{error}</Alert>
+    <form onSubmit={handleFormSubmit}>
+      {errorMessage && (
+        <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+          <Box sx={{ color: 'error.dark', fontWeight: 500 }}>{errorMessage}</Box>
         </Box>
       )}
 
@@ -95,7 +110,13 @@ export default function AuthLogin() {
         render={({ field }) => (
           <CustomFormControl fullWidth error={!!errors.email}>
             <InputLabel htmlFor="outlined-adornment-email-login">Email Address</InputLabel>
-            <OutlinedInput {...field} id="outlined-adornment-email-login" type="email" placeholder="admin@leads.com" disabled={isLoading} />
+            <OutlinedInput
+              {...field}
+              id="outlined-adornment-email-login"
+              type="email"
+              placeholder="admin@leads.com (default)"
+              disabled={isLoading}
+            />
             {errors.email && <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5 }}>{errors.email.message}</Box>}
           </CustomFormControl>
         )}
@@ -115,6 +136,7 @@ export default function AuthLogin() {
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
+                    type="button"
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}

@@ -5,6 +5,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { Theme } from '@mui/material/styles';
 
 // project imports
@@ -44,10 +45,13 @@ export default function Login() {
                   <AuthLogin />
                 </Box>
                 <Divider sx={{ width: 1 }} />
-                <Stack sx={{ alignItems: 'center' }}>
+                <Stack sx={{ alignItems: 'center', gap: 1 }}>
                   <Typography component={Link} to="/pages/register" variant="subtitle1" sx={{ textDecoration: 'none' }}>
                     Don&apos;t have an account?
                   </Typography>
+                  <Button component={Link} to="/" variant="outlined" color="secondary">
+                    Back to Home
+                  </Button>
                 </Stack>
               </Stack>
             </AuthCardWrapper>

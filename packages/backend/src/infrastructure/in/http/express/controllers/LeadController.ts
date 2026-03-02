@@ -174,6 +174,65 @@ export class LeadController {
     }
 
     /**
+     * PUT /leads/:id
+     * Actualizar lead completo
+     */
+    static async update(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const { nombre, email, empresa, montoEstimado } = req.body;
+
+            // Validación básica
+            if (!nombre || !email || !empresa || montoEstimado === undefined) {
+                res.status(400).json({
+                    success: false,
+                    error: {
+                        code: "MISSING_FIELDS",
+                        message:
+                            "Los campos nombre, email, empresa y montoEstimado son requeridos",
+                    },
+                });
+                return;
+            }
+
+            // Ejecutar caso de uso
+            const updateLeadUseCase = container.getUpdateLeadUseCase();
+            const lead = await updateLeadUseCase.execute({
+                id: parseInt(id as string, 10),
+                nombre,
+                email,
+                empresa,
+                montoEstimado,
+                updaterId: req.user!.id,
+            });
+
+            // Respuesta exitosa
+            res.status(200).json({
+                success: true,
+                data: {
+                    lead: {
+                        id: lead.id,
+                        nombre: lead.nombre,
+                        email: lead.email.value,
+                        empresa: lead.empresa,
+                        montoEstimado: lead.montoEstimado,
+                        estado: lead.estado,
+                        userId: lead.userId,
+                        createdAt: lead.createdAt,
+                        updatedAt: lead.updatedAt,
+                    },
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * PATCH /leads/:id/status
      * Actualizar estado de un lead
      */

@@ -1,6 +1,4 @@
 import { RouterProvider } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 // routing
 import router from 'routes';
@@ -23,18 +21,6 @@ export default function App() {
         <AuthProvider>
           <NavigationScroll>
             <RouterProvider router={router} />
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
           </NavigationScroll>
         </AuthProvider>
       </SnackbarProvider>

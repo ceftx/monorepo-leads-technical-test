@@ -26,7 +26,6 @@
     "react-hook-form": "^7.54.2",
     "react-router": "7.9.6",
     "react-router-dom": "7.9.6",
-    "react-toastify": "^11.0.5",
     "simplebar-react": "3.3.2",
     "slick-carousel": "1.8.1",
     "socket.io-client": "^4.8.3",

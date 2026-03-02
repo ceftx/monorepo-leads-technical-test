@@ -53,12 +53,27 @@ export class NotificationService {
             where: { rol: "ADMIN" },
         });
 
-        // Crear notificaciones para cada admin
+        // Agregar al owner del lead si es vendedor
+        const recipients = [...admins];
+        const leadOwner = await this.prisma.user.findUnique({
+            where: { id: lead.userId },
+        });
+
+        // Si el owner es vendedor y no está en la lista (no es admin), agregarlo
+        if (
+            leadOwner &&
+            leadOwner.rol === "VENDEDOR" &&
+            !recipients.find((r) => r.id === leadOwner.id)
+        ) {
+            recipients.push(leadOwner);
+        }
+
+        // Crear notificaciones
         const notifications = await Promise.all(
-            admins.map((admin) =>
+            recipients.map((recipient) =>
                 this.prisma.notification.create({
                     data: {
-                        userId: admin.id,
+                        userId: recipient.id,
                         type: NotificationType.LEAD_CREATED,
                         message,
                         data: {
@@ -109,15 +124,19 @@ export class NotificationService {
             where: { rol: "ADMIN" },
         });
 
-        // Si el lead es de un vendedor, también notificarle
+        // Agregar al owner del lead si es vendedor
         const recipients = [...admins];
-        if (lead.userId !== updater.id) {
-            const leadOwner = await this.prisma.user.findUnique({
-                where: { id: lead.userId },
-            });
-            if (leadOwner && leadOwner.rol === "VENDEDOR") {
-                recipients.push(leadOwner);
-            }
+        const leadOwner = await this.prisma.user.findUnique({
+            where: { id: lead.userId },
+        });
+
+        // Si el owner es vendedor y no está en la lista (no es admin), agregarlo
+        if (
+            leadOwner &&
+            leadOwner.rol === "VENDEDOR" &&
+            !recipients.find((r) => r.id === leadOwner.id)
+        ) {
+            recipients.push(leadOwner);
         }
 
         // Crear notificaciones
@@ -160,6 +179,7 @@ export class NotificationService {
         leadId: number,
         leadName: string,
         empresa: string,
+        leadOwnerId: number,
         deleter: UserData,
     ): Promise<void> {
         const message = `Lead eliminado: ${leadName} - ${empresa}`;
@@ -169,12 +189,27 @@ export class NotificationService {
             where: { rol: "ADMIN" },
         });
 
+        // Agregar al owner del lead si es vendedor
+        const recipients = [...admins];
+        const leadOwner = await this.prisma.user.findUnique({
+            where: { id: leadOwnerId },
+        });
+
+        // Si el owner es vendedor y no está en la lista (no es admin), agregarlo
+        if (
+            leadOwner &&
+            leadOwner.rol === "VENDEDOR" &&
+            !recipients.find((r) => r.id === leadOwner.id)
+        ) {
+            recipients.push(leadOwner);
+        }
+
         // Crear notificaciones
         const notifications = await Promise.all(
-            admins.map((admin) =>
+            recipients.map((recipient) =>
                 this.prisma.notification.create({
                     data: {
-                        userId: admin.id,
+                        userId: recipient.id,
                         type: NotificationType.LEAD_DELETED,
                         message,
                         data: {

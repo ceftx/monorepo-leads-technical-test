@@ -111,34 +111,28 @@ export default function NotificationList({ notifications = [], loading = false, 
   }
 
   return (
-    <List sx={{ width: '100%', maxWidth: { xs: 300, md: 330 }, py: 0 }}>
+    <List sx={{ width: '100%', py: 0 }}>
       {notifications.map((notification) => (
         <ListItemWrapper key={notification.id} onClick={() => onNotificationClick && onNotificationClick(notification)}>
-          <ListItem
-            alignItems="flex-start"
-            disablePadding
-            secondaryAction={
-              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-                <Typography variant="caption" color="text.secondary">
-                  {getRelativeTime(notification.createdAt)}
-                </Typography>
-              </Stack>
-            }
-          >
+          <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar sx={getNotificationColor(notification.type)}>{getNotificationIcon(notification.type)}</Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={
-                <Typography variant="subtitle2" sx={{ pr: 6 }}>
-                  {notification.message}
-                </Typography>
-              }
+              primary={<Typography variant="subtitle2">{notification.message}</Typography>}
               secondary={
-                <Stack direction="row" sx={{ gap: 1, mt: 0.5 }}>
-                  {!notification.read && <Chip label="Nueva" color="error" size="small" sx={{ width: 'min-content', height: 20 }} />}
+                <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
+                  {!notification.read ? (
+                    <Chip label="Nueva" color="error" size="small" sx={{ width: 'min-content', height: 20 }} />
+                  ) : (
+                    <Box />
+                  )}
+                  <Typography variant="caption" color="text.secondary">
+                    {getRelativeTime(notification.createdAt)}
+                  </Typography>
                 </Stack>
               }
+              secondaryTypographyProps={{ component: 'div' }}
             />
           </ListItem>
         </ListItemWrapper>

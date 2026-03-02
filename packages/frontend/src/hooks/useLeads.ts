@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { leadsApi } from '../api/leadsApi';
-import { Lead, CreateLeadDto, LeadStatus } from '../types/lead';
+import { Lead, CreateLeadDto, UpdateLeadDto, LeadStatus } from '../types/lead';
 
 interface UseLeadsResult {
   leads: Lead[];
@@ -8,6 +8,7 @@ interface UseLeadsResult {
   error: string | null;
   refetch: () => Promise<void>;
   createLead: (data: CreateLeadDto) => Promise<Lead | null>;
+  updateLead: (id: number, data: UpdateLeadDto) => Promise<Lead | null>;
   updateLeadStatus: (id: number, status: LeadStatus) => Promise<void>;
   deleteLead: (id: number) => Promise<void>;
 }
@@ -53,6 +54,22 @@ export const useLeads = (): UseLeadsResult => {
     }
   };
 
+  const updateLead = async (id: number, data: UpdateLeadDto): Promise<Lead | null> => {
+    try {
+      const response = await leadsApi.update(id, data);
+
+      if (response.success && response.data) {
+        await fetchLeads(); // Refresh list
+        return response.data.lead;
+      } else {
+        throw new Error(response.error?.message || 'Failed to update lead');
+      }
+    } catch (err: any) {
+      console.error('Error updating lead:', err);
+      throw err;
+    }
+  };
+
   const updateLeadStatus = async (id: number, status: LeadStatus): Promise<void> => {
     try {
       await leadsApi.updateStatus(id, { estado: status });
@@ -84,6 +101,7 @@ export const useLeads = (): UseLeadsResult => {
     error,
     refetch: fetchLeads,
     createLead,
+    updateLead,
     updateLeadStatus,
     deleteLead
   };

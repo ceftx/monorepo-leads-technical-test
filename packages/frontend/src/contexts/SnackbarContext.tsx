@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 
 interface SnackbarContextType {
@@ -16,10 +16,18 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) 
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState<AlertColor>('success');
 
+  useEffect(() => {
+    if (open) {
+      console.log('✅ Snackbar ABIERTO con mensaje:', message, 'severity:', severity);
+    }
+  }, [open, message, severity]);
+
   const showSnackbar = (msg: string, sev: AlertColor = 'success') => {
+    console.log('🎯 SnackbarContext.showSnackbar called:', msg, sev);
     setMessage(msg);
     setSeverity(sev);
     setOpen(true);
+    console.log('🎯 SnackbarContext state updated, open=true');
   };
 
   const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {

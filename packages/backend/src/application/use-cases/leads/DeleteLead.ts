@@ -30,6 +30,7 @@ export class DeleteLead {
             id: lead.id,
             nombre: lead.nombre,
             empresa: lead.empresa,
+            userId: lead.userId,
         };
 
         // 4. Eliminar de la base de datos
@@ -42,6 +43,7 @@ export class DeleteLead {
                 leadInfo.id,
                 leadInfo.nombre,
                 leadInfo.empresa,
+                leadInfo.userId,
                 {
                     id: currentUser.id,
                     nombre: currentUser.nombre,

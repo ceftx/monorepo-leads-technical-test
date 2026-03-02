@@ -1,6 +1,6 @@
 import axiosInstance from './axiosInstance';
 import { ApiResponse } from 'types/api';
-import { Lead, CreateLeadDto, UpdateLeadStatusDto } from 'types/lead';
+import { Lead, CreateLeadDto, UpdateLeadDto, UpdateLeadStatusDto } from 'types/lead';
 
 export const leadsApi = {
   getAll: async () => {
@@ -15,6 +15,11 @@ export const leadsApi = {
 
   create: async (leadData: CreateLeadDto) => {
     const response = await axiosInstance.post<ApiResponse<{ lead: Lead }>>('/leads', leadData);
+    return response.data;
+  },
+
+  update: async (id: number, leadData: UpdateLeadDto) => {
+    const response = await axiosInstance.put<ApiResponse<{ lead: Lead }>>(`/leads/${id}`, leadData);
     return response.data;
   },
 

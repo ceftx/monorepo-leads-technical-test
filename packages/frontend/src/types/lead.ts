@@ -24,6 +24,13 @@ export interface CreateLeadDto {
   montoEstimado: number;
 }
 
+export interface UpdateLeadDto {
+  nombre: string;
+  email: string;
+  empresa: string;
+  montoEstimado: number;
+}
+
 export interface UpdateLeadStatusDto {
   estado: LeadStatus;
 }
