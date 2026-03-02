@@ -16,39 +16,38 @@ router.use(authMiddleware);
 
 /**
  * GET /dashboard/user
- * Obtener métricas del usuario actual
- * - Vendedor: solo ve sus propias métricas
- * - Admin: ve sus propias métricas (puede usar /dashboard/user/:id para ver otras)
- *
- * Responde con:
- * - Total de leads
- * - Distribución por estado
- * - Monto estimado total
- * - Leads de los últimos 7 días
+ * @tags Dashboard
+ * @summary Obtener métricas del usuario autenticado
+ * @description Retorna estadísticas y métricas del usuario actual (total leads, distribución por estado, monto estimado, etc)
+ * @security bearerAuth
+ * @returns {UserMetrics} 200 - Métricas del usuario
+ * @returns {Error} 401 - No autenticado
  */
 router.get("/user", DashboardController.getUserMetrics);
 
 /**
  * GET /dashboard/user/:id
- * Obtener métricas de un usuario específico
- * Solo admin
- *
- * Permite al admin ver las métricas de cualquier vendedor
+ * @tags Dashboard
+ * @summary Obtener métricas de un usuario específico
+ * @description Permite al admin ver las métricas de cualquier vendedor
+ * @security bearerAuth
+ * @param {number} id.path.required - ID del usuario
+ * @returns {UserMetrics} 200 - Métricas del usuario
+ * @returns {Error} 401 - No autenticado
+ * @returns {Error} 403 - Requiere rol ADMIN
+ * @returns {Error} 404 - Usuario no encontrado
  */
 router.get("/user/:id", adminOnly, DashboardController.getUserMetricsById);
 
 /**
  * GET /dashboard/global
- * Obtener métricas globales del sistema
- * Solo admin
- *
- * Responde con:
- * - Total de leads (todos)
- * - Total de usuarios
- * - Distribución por estado (global)
- * - Monto estimado total (global)
- * - Leads de los últimos 7 días (global)
- * - Ranking de vendedores por monto ganado
+ * @tags Dashboard
+ * @summary Obtener métricas globales del sistema
+ * @description Retorna estadísticas globales: total leads, usuarios, ranking de vendedores, etc (solo ADMIN)
+ * @security bearerAuth
+ * @returns {GlobalMetrics} 200 - Métricas globales
+ * @returns {Error} 401 - No autenticado
+ * @returns {Error} 403 - Requiere rol ADMIN
  */
 router.get("/global", adminOnly, DashboardController.getGlobalMetrics);
 

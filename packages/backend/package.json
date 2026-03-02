@@ -10,7 +10,7 @@
         "db:generate": "prisma generate",
         "db:push": "prisma db push",
         "db:migrate": "prisma migrate deploy",
-        "doc": "npm run build && node swagger.ts",
+        "doc": "tsx swagger.ts",
         "format": "prettier --write \"src/**/*.{ts,js,json}\"",
         "test": "vitest",
         "test:ui": "vitest --ui",

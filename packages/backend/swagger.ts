@@ -139,12 +139,12 @@ const doc = {
 
 const outputFile = "./swagger-output.json";
 
-// CLAVE: Apuntar a los archivos de RUTAS compilados en dist/
+// Apuntar a los archivos de RUTAS TypeScript directamente
 const routes = [
-    "./dist/infrastructure/in/http/express/routes/auth.routes.js",
-    "./dist/infrastructure/in/http/express/routes/leads.routes.js",
-    "./dist/infrastructure/in/http/express/routes/users.routes.js",
-    "./dist/infrastructure/in/http/express/routes/dashboard.routes.js",
+    "./src/infrastructure/in/http/express/routes/auth.routes.ts",
+    "./src/infrastructure/in/http/express/routes/leads.routes.ts",
+    "./src/infrastructure/in/http/express/routes/users.routes.ts",
+    "./src/infrastructure/in/http/express/routes/dashboard.routes.ts",
 ];
 
 swaggerAutogen({ openapi: "3.0.0" })(outputFile, routes, doc).then(() => {

@@ -19,19 +19,19 @@ router.use(adminOnly);
 
 /**
  * GET /users
- * Listar todos los usuarios
- * Solo admin
+ * #swagger.tags = ['Users']
+ * #swagger.summary = 'Listar todos los usuarios'
+ * #swagger.description = 'Obtiene la lista completa de usuarios (solo ADMIN)'
+ * #swagger.security = [{ "bearerAuth": [] }]
  */
 router.get("/", UserController.list);
 
 /**
  * DELETE /users/:id
- * Eliminar un usuario
- * Solo admin
- *
- * Restricciones:
- * - No puede eliminarse a sí mismo
- * - Los leads del usuario se eliminan en cascade
+ * #swagger.tags = ['Users']
+ * #swagger.summary = 'Eliminar un usuario'
+ * #swagger.description = 'Elimina un usuario y todos sus leads (solo ADMIN). No puede eliminarse a sí mismo'
+ * #swagger.security = [{ "bearerAuth": [] }]
  */
 router.delete("/:id", UserController.delete);
 

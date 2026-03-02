@@ -15,47 +15,76 @@ router.use(authMiddleware);
 
 /**
  * POST /leads
- * Crear un nuevo lead
- * - Vendedor: crea lead asignado a sí mismo
- * - Admin: puede asignar a cualquier vendedor con userId opcional
+ * #swagger.tags = ['Leads']
+ * #swagger.summary = 'Crear un nuevo lead'
+ * #swagger.description = 'Crea un lead. Vendedor: asignado a sí mismo. Admin: puede especificar userId'
+ * #swagger.security = [{ "bearerAuth": [] }]
+ * #swagger.requestBody = {
+ *   required: true,
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/CreateLeadRequest" }
+ *     }
+ *   }
+ * }
+ * #swagger.responses[201] = {
+ *   description: 'Lead creado exitosamente',
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/Lead" }
+ *     }
+ *   }
+ * }
  */
 router.post("/", LeadController.create);
 
 /**
  * GET /leads
- * Listar leads
- * - Vendedor: solo ve sus propios leads
- * - Admin: ve todos los leads (o filtrar por userId con query param)
- *
- * Query params opcionales:
- * - userId: number (solo admin puede filtrar por otro usuario)
+ * #swagger.tags = ['Leads']
+ * #swagger.summary = 'Listar leads'
+ * #swagger.description = 'Vendedor: solo ve sus leads. Admin: ve todos (o filtra por userId)'
+ * #swagger.security = [{ "bearerAuth": [] }]
+ * #swagger.parameters['userId'] = {
+ *   in: 'query',
+ *   description: 'ID del usuario (solo admin)',
+ *   required: false,
+ *   type: 'number'
+ * }
  */
 router.get("/", LeadController.list);
 
 /**
  * GET /leads/:id
- * Obtener un lead específico
- * - Vendedor: solo puede ver sus propios leads
- * - Admin: puede ver cualquier lead
+ * #swagger.tags = ['Leads']
+ * #swagger.summary = 'Obtener un lead por ID'
+ * #swagger.description = 'Vendedor: solo sus leads. Admin: cualquier lead'
+ * #swagger.security = [{ "bearerAuth": [] }]
  */
 router.get("/:id", LeadController.getById);
 
 /**
  * PATCH /leads/:id/status
- * Actualizar el estado de un lead
- * - Vendedor: solo puede actualizar sus propios leads
- * - Admin: puede actualizar cualquier lead
- *
- * Body:
- * - estado: LeadStatus (NUEVO | CONTACTADO | GANADO | PERDIDO)
+ * #swagger.tags = ['Leads']
+ * #swagger.summary = 'Actualizar estado del lead'
+ * #swagger.description = 'Vendedor: solo sus leads. Admin: cualquier lead'
+ * #swagger.security = [{ "bearerAuth": [] }]
+ * #swagger.requestBody = {
+ *   required: true,
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/UpdateLeadStatusRequest" }
+ *     }
+ *   }
+ * }
  */
 router.patch("/:id/status", LeadController.updateStatus);
 
 /**
  * DELETE /leads/:id
- * Eliminar un lead
- * - Vendedor: solo puede eliminar sus propios leads
- * - Admin: puede eliminar cualquier lead
+ * #swagger.tags = ['Leads']
+ * #swagger.summary = 'Eliminar un lead'
+ * #swagger.description = 'Vendedor: solo sus leads. Admin: cualquier lead'
+ * #swagger.security = [{ "bearerAuth": [] }]
  */
 router.delete("/:id", LeadController.delete);
 

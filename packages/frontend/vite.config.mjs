@@ -3,10 +3,14 @@ import react from '@vitejs/plugin-react';
 import jsconfigPaths from 'vite-jsconfig-paths';
 
 export default defineConfig(({ mode }) => {
-  // depending on your application, base can also be "/"
+  // Load environment variables
   const env = loadEnv(mode, process.cwd(), '');
-  const API_URL = `${env.VITE_APP_BASE_NAME}`;
-  const PORT = 5173;
+
+  // Port configuration - use Railway's PORT or fallback to 5173
+  const PORT = parseInt(env.PORT || '5173', 10);
+
+  // Base path - should be "/" for production
+  const BASE_PATH = env.VITE_BASE_PATH || '/';
 
   return {
     server: {
@@ -21,7 +25,8 @@ export default defineConfig(({ mode }) => {
     },
     preview: {
       open: true,
-      host: true
+      host: true,
+      port: PORT
     },
     define: {
       global: 'window'
@@ -44,7 +49,7 @@ export default defineConfig(({ mode }) => {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs'
       }
     },
-    base: API_URL,
+    base: BASE_PATH,
     plugins: [react(), jsconfigPaths()]
   };
 });
