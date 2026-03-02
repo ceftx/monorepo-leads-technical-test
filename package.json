@@ -6,6 +6,8 @@
         "packages/*"
     ],
     "scripts": {
+        "start": "npm run build:backend && npm run start:backend",
+        "start:backend": "npm run start --workspace=@leads/backend",
         "dev:backend": "npm run dev --workspace=@leads/backend",
         "dev:frontend": "npm run dev --workspace=@leads/frontend",
         "dev": "npm run dev:backend & npm run dev:frontend",
