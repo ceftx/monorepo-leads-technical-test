@@ -1,9 +1,5 @@
 import express, { type Application } from "express";
 import cors from "cors";
-import swaggerUi from "swagger-ui-express";
-import { readFileSync } from "fs";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
 import { container } from "../../../../shared/DependencyInjection.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
 
@@ -12,16 +8,6 @@ import authRoutes from "./routes/auth.routes.ts";
 import leadsRoutes from "./routes/leads.routes.ts";
 import usersRoutes from "./routes/users.routes.ts";
 import dashboardRoutes from "./routes/dashboard.routes.ts";
-
-// Load swagger doc
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const swaggerDocument = JSON.parse(
-    readFileSync(
-        join(__dirname, "../../../../../swagger-output.json"),
-        "utf-8",
-    ),
-);
 
 /**
  * Clase Server - Configuración completa del servidor Express
@@ -36,12 +22,18 @@ const swaggerDocument = JSON.parse(
 export class Server {
     private app: Application;
     private port: number;
+    private initialized: Promise<void>;
 
     constructor(port: number = 3000) {
         this.app = express();
         this.port = port;
 
-        this.configureMiddlewares();
+        // Initialize asynchronously
+        this.initialized = this.initialize();
+    }
+
+    private async initialize(): Promise<void> {
+        await this.configureMiddlewares();
         this.configureRoutes();
         this.configureErrorHandler();
     }
@@ -49,7 +41,7 @@ export class Server {
     /**
      * Configurar middlewares globales
      */
-    private configureMiddlewares(): void {
+    private async configureMiddlewares(): Promise<void> {
         // CORS - Permitir requests desde el frontend
         this.app.use(
             cors({
@@ -64,15 +56,8 @@ export class Server {
         // Body parser - Parsear URL-encoded data
         this.app.use(express.urlencoded({ extended: true }));
 
-        // Swagger documentation
-        this.app.use(
-            "/api-docs",
-            swaggerUi.serve,
-            swaggerUi.setup(swaggerDocument, {
-                customCss: ".swagger-ui .topbar { display: none }",
-                customSiteTitle: "Leads API Documentation",
-            }),
-        );
+        // Swagger documentation (async import)
+        await this.setupSwagger();
 
         // Health check endpoint
         this.app.get("/health", (req, res) => {
@@ -82,6 +67,41 @@ export class Server {
                 timestamp: new Date().toISOString(),
             });
         });
+    }
+
+    /**
+     * Setup Swagger documentation with dynamic import
+     */
+    private async setupSwagger(): Promise<void> {
+        try {
+            const swaggerUi = await import("swagger-ui-express");
+            const { readFileSync } = await import("fs");
+            const { fileURLToPath } = await import("url");
+            const { dirname, join } = await import("path");
+
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
+
+            const swaggerDocument = JSON.parse(
+                readFileSync(
+                    join(__dirname, "../../../../../swagger-output.json"),
+                    "utf-8",
+                ),
+            );
+
+            this.app.use(
+                "/api-docs",
+                swaggerUi.default.serve,
+                swaggerUi.default.setup(swaggerDocument, {
+                    customCss: ".swagger-ui .topbar { display: none }",
+                    customSiteTitle: "Leads API Documentation",
+                }),
+            );
+
+            console.log("📚 Swagger documentation available at /api-docs");
+        } catch (error) {
+            console.warn("⚠️  Swagger documentation not available:", error);
+        }
     }
 
     /**
@@ -127,6 +147,9 @@ export class Server {
      */
     async start(): Promise<void> {
         try {
+            // Wait for initialization to complete
+            await this.initialized;
+
             // Verificar conexión a la base de datos
             const prisma = container.getPrisma();
             await prisma.$connect();

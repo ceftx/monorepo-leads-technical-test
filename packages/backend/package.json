@@ -11,7 +11,6 @@
         "db:push": "prisma db push",
         "db:migrate": "prisma migrate deploy",
         "doc": "npm run build && node swagger.ts",
-        "start": "node dist/index.js",
         "format": "prettier --write \"src/**/*.{ts,js,json}\"",
         "test": "vitest",
         "test:ui": "vitest --ui",
@@ -40,6 +39,7 @@
         "swagger-autogen": "^2.23.7",
         "swagger-ui-express": "^5.0.1",
         "ts-node": "^10.9.2",
+        "tsup": "^8.5.1",
         "tsx": "^4.21.0",
         "vitest": "^4.0.18"
     },
