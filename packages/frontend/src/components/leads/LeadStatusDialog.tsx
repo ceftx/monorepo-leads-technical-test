@@ -1,6 +1,7 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Stack } from '@mui/material';
 import { LeadStatus } from '../../types/lead';
 import LeadStatusChip from './LeadStatusChip';
+import { useTranslation } from 'i18n';
 
 interface LeadStatusDialogProps {
   open: boolean;
@@ -40,16 +41,17 @@ const getStatusDescription = (status: LeadStatus): string => {
 };
 
 export default function LeadStatusDialog({ open, currentStatus, leadName, onClose, onConfirm }: LeadStatusDialogProps) {
+  const { t } = useTranslation();
   const availableTransitions = getAvailableTransitions(currentStatus);
 
   if (availableTransitions.length === 0) {
     return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Change Lead Status</DialogTitle>
+        <DialogTitle>{t('leads.changeStatus')}</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Typography>
-              The lead <strong>{leadName}</strong> is already in a final state:
+              {t('leads.finalStatusMessage')}: <strong>{leadName}</strong>
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
               <LeadStatusChip status={currentStatus} size="medium" />
@@ -58,12 +60,12 @@ export default function LeadStatusDialog({ open, currentStatus, leadName, onClos
               {getStatusDescription(currentStatus)}
             </Typography>
             <Typography variant="body2" color="textSecondary" sx={{ textAlign: 'center', fontStyle: 'italic' }}>
-              Final states cannot be changed.
+              {t('leads.finalStatesCannotChange')}
             </Typography>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose}>{t('common.close')}</Button>
         </DialogActions>
       </Dialog>
     );
@@ -71,17 +73,17 @@ export default function LeadStatusDialog({ open, currentStatus, leadName, onClos
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Change Lead Status</DialogTitle>
+      <DialogTitle>{t('leads.changeStatus')}</DialogTitle>
       <DialogContent>
         <Stack spacing={3}>
           <Typography>
-            Change the status of <strong>{leadName}</strong>:
+            {t('leads.changeStatusMessage')} <strong>{leadName}</strong>:
           </Typography>
 
           {/* Current Status */}
           <Box>
             <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>
-              Current Status:
+              {t('leads.currentStatus')}:
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <LeadStatusChip status={currentStatus} size="medium" />
@@ -94,7 +96,7 @@ export default function LeadStatusDialog({ open, currentStatus, leadName, onClos
           {/* Available Transitions */}
           <Box>
             <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 2 }}>
-              Select new status:
+              {t('leads.selectNewStatus')}:
             </Typography>
             <Stack spacing={2}>
               {availableTransitions.map((status) => (
@@ -125,7 +127,7 @@ export default function LeadStatusDialog({ open, currentStatus, leadName, onClos
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
       </DialogActions>
     </Dialog>
   );

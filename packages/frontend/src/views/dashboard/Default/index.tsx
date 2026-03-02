@@ -17,7 +17,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip
+  Chip,
+  Grid
 } from '@mui/material';
 
 // project imports
@@ -29,6 +30,10 @@ import { useTranslation } from 'i18n';
 
 // assets
 import { IconFileDescription, IconCurrencyDollar, IconTrendingUp, IconChartPie, IconTrophy } from '@tabler/icons-react';
+
+// charts
+import ReactApexChart from 'react-apexcharts';
+import { ApexOptions } from 'apexcharts';
 
 // Helper function to get status color
 const getStatusColor = (status: LeadStatus): 'default' | 'primary' | 'success' | 'error' | 'warning' => {
@@ -235,16 +240,80 @@ export default function Dashboard() {
             <IconChartPie size={24} color={theme.palette.primary.main} />
             <Typography variant="h4">{t('dashboard.distributionByStatus')}</Typography>
           </Stack>
-          <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
-            {metrics.distribucionPorEstado.map((item, index) => (
-              <Chip
-                key={index}
-                label={`${t(`leads.status.${item.estado}`)}: ${item.cantidad}`}
-                color={getStatusColor(item.estado)}
-                sx={{ fontSize: '0.875rem', fontWeight: 500 }}
+
+          {/* Chart and Chips */}
+          <Grid container spacing={3}>
+            {/* Chart */}
+            <Grid size={{ xs: 12, md: 5 }}>
+              <ReactApexChart
+                type="donut"
+                options={
+                  {
+                    labels: metrics.distribucionPorEstado.map((item) => t(`leads.status.${item.estado}`)),
+                    colors: [theme.palette.primary.main, theme.palette.warning.main, theme.palette.success.main, theme.palette.error.main],
+                    chart: {
+                      background: 'transparent'
+                    },
+                    legend: {
+                      position: 'bottom',
+                      labels: {
+                        colors: theme.palette.text.secondary
+                      }
+                    },
+                    dataLabels: {
+                      enabled: true,
+                      style: {
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        colors: ['#fff']
+                      }
+                    },
+                    plotOptions: {
+                      pie: {
+                        donut: {
+                          size: '65%',
+                          labels: {
+                            show: true,
+                            total: {
+                              show: true,
+                              label: 'Total Leads',
+                              color: theme.palette.text.primary,
+                              fontSize: '14px',
+                              fontWeight: 600
+                            }
+                          }
+                        }
+                      }
+                    },
+                    stroke: {
+                      width: 0
+                    },
+                    tooltip: {
+                      y: {
+                        formatter: (val) => `${val} leads`
+                      }
+                    }
+                  } as ApexOptions
+                }
+                series={metrics.distribucionPorEstado.map((item) => item.cantidad)}
+                height={280}
               />
-            ))}
-          </Stack>
+            </Grid>
+
+            {/* Chips */}
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap sx={{ alignItems: 'center', height: '100%' }}>
+                {metrics.distribucionPorEstado.map((item, index) => (
+                  <Chip
+                    key={index}
+                    label={`${t(`leads.status.${item.estado}`)}: ${item.cantidad}`}
+                    color={getStatusColor(item.estado)}
+                    sx={{ fontSize: '0.875rem', fontWeight: 500, py: 2 }}
+                  />
+                ))}
+              </Stack>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
 

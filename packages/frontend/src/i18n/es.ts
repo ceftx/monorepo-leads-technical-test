@@ -109,6 +109,12 @@ const es = {
     statusTooltip: 'Haz clic en el estado para cambiarlo',
     statusFinal: 'Estado final - no se puede cambiar',
     statusChange: 'Haz clic para cambiar el estado',
+    changeStatus: 'Cambiar Estado del Lead',
+    changeStatusMessage: 'Cambiar el estado de',
+    currentStatus: 'Estado Actual',
+    selectNewStatus: 'Seleccionar nuevo estado',
+    finalStatusMessage: 'El lead ya está en un estado final',
+    finalStatesCannotChange: 'Los estados finales no pueden ser cambiados.',
 
     // Lead fields
     leadName: 'Nombre del Lead',
