@@ -1,0 +1,485 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Leads Management API",
+    "description": "API para gestión de leads con autenticación JWT y roles (ADMIN/VENDEDOR)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api"
+    },
+    {
+      "url": "https://localhost:3000/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoints de autenticación"
+    },
+    {
+      "name": "Leads",
+      "description": "Gestión de leads"
+    },
+    {
+      "name": "Users",
+      "description": "Gestión de usuarios (solo ADMIN)"
+    },
+    {
+      "name": "Dashboard",
+      "description": "Métricas y estadísticas"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/{id}/status": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/global": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "nombre": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "rol": {
+            "type": "string",
+            "example": "VENDEDOR"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "Lead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "nombre": {
+            "type": "string",
+            "example": "Jane Smith"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane@company.com"
+          },
+          "empresa": {
+            "type": "string",
+            "example": "Tech Corp"
+          },
+          "montoEstimado": {
+            "type": "number",
+            "example": 50000
+          },
+          "estado": {
+            "type": "string",
+            "example": "NUEVO"
+          },
+          "userId": {
+            "type": "number",
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          },
+          "nombre": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "rol": {
+            "type": "string",
+            "example": "VENDEDOR"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "nombre"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "CreateLeadRequest": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "Jane Smith"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane@company.com"
+          },
+          "empresa": {
+            "type": "string",
+            "example": "Tech Corp"
+          },
+          "montoEstimado": {
+            "type": "number",
+            "example": 50000
+          }
+        },
+        "required": [
+          "nombre",
+          "email",
+          "empresa",
+          "montoEstimado"
+        ]
+      },
+      "UpdateLeadStatusRequest": {
+        "type": "object",
+        "properties": {
+          "estado": {
+            "type": "string",
+            "example": "CONTACTADO"
+          }
+        },
+        "required": [
+          "estado"
+        ]
+      },
+      "UserMetrics": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "number",
+            "example": 1
+          },
+          "nombreUsuario": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "totalLeads": {
+            "type": "number",
+            "example": 10
+          },
+          "distribucionPorEstado": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "estado": {
+                  "type": "string",
+                  "example": "NUEVO"
+                },
+                "cantidad": {
+                  "type": "number",
+                  "example": 5
+                }
+              }
+            }
+          },
+          "montoEstimadoTotal": {
+            "type": "number",
+            "example": 500000
+          },
+          "leadsUltimos7Dias": {
+            "type": "number",
+            "example": 5
+          },
+          "leadsRecientes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lead"
+            }
+          }
+        }
+      },
+      "GlobalMetrics": {
+        "type": "object",
+        "properties": {
+          "totalLeads": {
+            "type": "number",
+            "example": 50
+          },
+          "distribucionPorEstado": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "estado": {
+                  "type": "string",
+                  "example": "NUEVO"
+                },
+                "cantidad": {
+                  "type": "number",
+                  "example": 20
+                }
+              }
+            }
+          },
+          "montoEstimadoTotal": {
+            "type": "number",
+            "example": 2500000
+          },
+          "leadsUltimos7Dias": {
+            "type": "number",
+            "example": 15
+          },
+          "leadsRecientes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lead"
+            }
+          },
+          "totalUsuarios": {
+            "type": "number",
+            "example": 10
+          },
+          "rankingVendedores": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "number",
+                  "example": 2
+                },
+                "nombreVendedor": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "montoGanado": {
+                  "type": "number",
+                  "example": 150000
+                },
+                "leadsGanados": {
+                  "type": "number",
+                  "example": 5
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "ERROR_CODE"
+              },
+              "message": {
+                "type": "string",
+                "example": "Error message"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "in": "header",
+        "description": "JWT token. Formato: Bearer {token}"
+      }
+    }
+  }
+}
