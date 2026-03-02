@@ -139,13 +139,8 @@ const doc = {
 
 const outputFile = "./swagger-output.json";
 
-// Apuntar a los archivos de RUTAS TypeScript directamente
-const routes = [
-    "./src/infrastructure/in/http/express/routes/auth.routes.ts",
-    "./src/infrastructure/in/http/express/routes/leads.routes.ts",
-    "./src/infrastructure/in/http/express/routes/users.routes.ts",
-    "./src/infrastructure/in/http/express/routes/dashboard.routes.ts",
-];
+// Usar el wrapper que monta todas las rutas con sus prefijos correctos
+const routes = ["./swagger-routes-wrapper.ts"];
 
 swaggerAutogen({ openapi: "3.0.0" })(outputFile, routes, doc).then(() => {
     console.log("✅ Swagger documentation generated successfully!");

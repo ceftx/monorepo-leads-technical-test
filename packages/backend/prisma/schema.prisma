@@ -27,14 +27,15 @@ enum LeadStatus {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255) // Hash de bcrypt
-  nombre    String   @db.VarChar(100)
-  rol       UserRole @default(VENDEDOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  leads     Lead[] // Relación 1:N
+  id            Int            @id @default(autoincrement())
+  email         String         @unique @db.VarChar(255)
+  password      String         @db.VarChar(255) // Hash de bcrypt
+  nombre        String         @db.VarChar(100)
+  rol           UserRole       @default(VENDEDOR)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  leads         Lead[] // Relación 1:N
+  notifications Notification[] // Relación 1:N
 }
 
 model Lead {
@@ -51,5 +52,26 @@ model Lead {
 
   @@index([userId]) // Filtrar por usuario
   @@index([estado]) // Métricas por estado
+  @@index([createdAt]) // Ordenar por fecha
+}
+
+enum NotificationType {
+  LEAD_CREATED
+  LEAD_STATUS_CHANGED
+  LEAD_DELETED
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  type      NotificationType
+  message   String           @db.VarChar(500)
+  data      Json? // Metadata adicional (leadId, oldStatus, newStatus, etc)
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read]) // Consultas por usuario no leídas
   @@index([createdAt]) // Ordenar por fecha
 }

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -13,19 +13,20 @@ import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // project imports
 import { withAlpha } from 'utils/colorUtils';
 
 // assets
-import { IconBrandTelegram, IconBuildingStore, IconMailbox, IconPhoto } from '@tabler/icons-react';
-import User1 from 'assets/images/users/user-round.svg';
+import { IconFileDescription, IconEdit, IconTrash } from '@tabler/icons-react';
 
-function ListItemWrapper({ children }) {
+function ListItemWrapper({ children, onClick }) {
   const theme = useTheme();
 
   return (
     <Box
+      onClick={onClick}
       sx={{
         p: 2,
         borderBottom: '1px solid',
@@ -41,144 +42,113 @@ function ListItemWrapper({ children }) {
   );
 }
 
+ListItemWrapper.propTypes = {
+  children: PropTypes.node,
+  onClick: PropTypes.func
+};
+
 // ==============================|| NOTIFICATION LIST ITEM ||============================== //
 
-export default function NotificationList() {
-  const containerSX = { gap: 2, pl: 7 };
+export default function NotificationList({ notifications = [], loading = false, onNotificationClick }) {
+  const theme = useTheme();
+
+  // Icon por tipo de notificación
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'LEAD_CREATED':
+        return <IconFileDescription stroke={1.5} size="20px" />;
+      case 'LEAD_STATUS_CHANGED':
+        return <IconEdit stroke={1.5} size="20px" />;
+      case 'LEAD_DELETED':
+        return <IconTrash stroke={1.5} size="20px" />;
+      default:
+        return <IconFileDescription stroke={1.5} size="20px" />;
+    }
+  };
+
+  // Color por tipo de notificación
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'LEAD_CREATED':
+        return { color: 'success.dark', bgcolor: 'success.light' };
+      case 'LEAD_STATUS_CHANGED':
+        return { color: 'warning.dark', bgcolor: 'warning.light' };
+      case 'LEAD_DELETED':
+        return { color: 'error.dark', bgcolor: 'error.light' };
+      default:
+        return { color: 'primary.dark', bgcolor: 'primary.light' };
+    }
+  };
+
+  // Formatear tiempo relativo
+  const getRelativeTime = (date) => {
+    try {
+      return formatDistanceToNow(new Date(date), {
+        addSuffix: true,
+        locale: es
+      });
+    } catch {
+      return 'hace un momento';
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress size={24} />
+      </Box>
+    );
+  }
+
+  if (notifications.length === 0) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="subtitle2" color="text.secondary">
+          No hay notificaciones
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <List sx={{ width: '100%', maxWidth: { xs: 300, md: 330 }, py: 0 }}>
-      <ListItemWrapper>
-        <ListItem
-          alignItems="center"
-          disablePadding
-          secondaryAction={
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Typography variant="caption">2 min ago</Typography>
-            </Stack>
-          }
-        >
-          <ListItemAvatar>
-            <Avatar alt="John Doe" src={User1} />
-          </ListItemAvatar>
-          <ListItemText primary="John Doe" />
-        </ListItem>
-        <Stack sx={containerSX}>
-          <Typography variant="subtitle2">It is a long established fact that a reader will be distracted</Typography>
-          <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-            <Chip label="Unread" color="error" size="small" sx={{ width: 'min-content' }} />
-            <Chip label="New" color="warning" size="small" sx={{ width: 'min-content' }} />
-          </Stack>
-        </Stack>
-      </ListItemWrapper>
-      <ListItemWrapper>
-        <ListItem
-          alignItems="center"
-          disablePadding
-          secondaryAction={
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Typography variant="caption">2 min ago</Typography>
-            </Stack>
-          }
-        >
-          <ListItemAvatar>
-            <Avatar
-              sx={{
-                color: 'success.dark',
-                bgcolor: 'success.light'
-              }}
-            >
-              <IconBuildingStore stroke={1.5} size="20px" />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={<Typography variant="subtitle1">Store Verification Done</Typography>} />
-        </ListItem>
-        <Stack sx={containerSX}>
-          <Typography variant="subtitle2">We have successfully received your request.</Typography>
-          <Chip label="Unread" color="error" size="small" sx={{ width: 'min-content' }} />
-        </Stack>
-      </ListItemWrapper>
-      <ListItemWrapper>
-        <ListItem
-          alignItems="center"
-          disablePadding
-          secondaryAction={
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Typography variant="caption">2 min ago</Typography>
-            </Stack>
-          }
-        >
-          <ListItemAvatar>
-            <Avatar
-              sx={{
-                color: 'primary.dark',
-                bgcolor: 'primary.light'
-              }}
-            >
-              <IconMailbox stroke={1.5} size="20px" />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={<Typography variant="subtitle1">Check Your Mail.</Typography>} />
-        </ListItem>
-        <Stack sx={containerSX}>
-          <Typography variant="subtitle2">All done! Now check your inbox as you&apos;re in for a sweet treat!</Typography>
-          <Button variant="contained" endIcon={<IconBrandTelegram stroke={1.5} size={20} />} sx={{ width: 'min-content' }}>
-            Mail
-          </Button>
-        </Stack>
-      </ListItemWrapper>
-      <ListItemWrapper>
-        <ListItem
-          alignItems="center"
-          disablePadding
-          secondaryAction={
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Typography variant="caption">2 min ago</Typography>
-            </Stack>
-          }
-        >
-          <ListItemAvatar>
-            <Avatar alt="John Doe" src={User1} />
-          </ListItemAvatar>
-          <ListItemText primary={<Typography variant="subtitle1">John Doe</Typography>} />
-        </ListItem>
-        <Stack sx={containerSX}>
-          <Typography component="span" variant="subtitle2">
-            Uploaded two file on &nbsp;
-            <Typography component="span" variant="h6">
-              21 Jan 2020
-            </Typography>
-          </Typography>
-          <Card sx={{ bgcolor: 'secondary.light' }}>
-            <Stack direction="row" sx={{ p: 2.5, gap: 2 }}>
-              <IconPhoto stroke={1.5} size="20px" />
-              <Typography variant="subtitle1">demo.jpg</Typography>
-            </Stack>
-          </Card>
-        </Stack>
-      </ListItemWrapper>
-      <ListItemWrapper>
-        <ListItem
-          alignItems="center"
-          disablePadding
-          secondaryAction={
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Typography variant="caption">2 min ago</Typography>
-            </Stack>
-          }
-        >
-          <ListItemAvatar>
-            <Avatar alt="John Doe" src={User1} />
-          </ListItemAvatar>
-          <ListItemText primary={<Typography variant="subtitle1">John Doe</Typography>} />
-        </ListItem>
-        <Stack sx={containerSX}>
-          <Typography variant="subtitle2">It is a long established fact that a reader will be distracted</Typography>
-          <Chip label="Confirmation of Account." color="success" size="small" sx={{ width: 'min-content' }} />
-        </Stack>
-      </ListItemWrapper>
+      {notifications.map((notification) => (
+        <ListItemWrapper key={notification.id} onClick={() => onNotificationClick && onNotificationClick(notification)}>
+          <ListItem
+            alignItems="flex-start"
+            disablePadding
+            secondaryAction={
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+                <Typography variant="caption" color="text.secondary">
+                  {getRelativeTime(notification.createdAt)}
+                </Typography>
+              </Stack>
+            }
+          >
+            <ListItemAvatar>
+              <Avatar sx={getNotificationColor(notification.type)}>{getNotificationIcon(notification.type)}</Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                <Typography variant="subtitle2" sx={{ pr: 6 }}>
+                  {notification.message}
+                </Typography>
+              }
+              secondary={
+                <Stack direction="row" sx={{ gap: 1, mt: 0.5 }}>
+                  {!notification.read && <Chip label="Nueva" color="error" size="small" sx={{ width: 'min-content', height: 20 }} />}
+                </Stack>
+              }
+            />
+          </ListItem>
+        </ListItemWrapper>
+      ))}
     </List>
   );
 }
 
-ListItemWrapper.propTypes = { children: PropTypes.node };
+NotificationList.propTypes = {
+  notifications: PropTypes.array,
+  loading: PropTypes.bool,
+  onNotificationClick: PropTypes.func
+};

@@ -5,6 +5,7 @@ import { LeadStatus } from "../../../domain/value-objects/LeadStatus.ts";
 import { NotFoundError } from "../../../domain/errors/UserErrors.ts";
 import { UnauthorizedError } from "../../../domain/errors/AuthErrors.ts";
 import type { User } from "../../../domain/entities/User.ts";
+import { container } from "../../../shared/DependencyInjection.ts";
 
 export interface CreateLeadDTO {
     nombre: string;
@@ -56,6 +57,17 @@ export class CreateLead {
         });
 
         // 3. Guardar en la base de datos
-        return await this.leadRepository.create(lead);
+        const createdLead = await this.leadRepository.create(lead);
+
+        // 4. Enviar notificación
+        const notificationService = container.getNotificationService();
+        if (notificationService) {
+            await notificationService.notifyLeadCreated(
+                createdLead,
+                currentUser,
+            );
+        }
+
+        return createdLead;
     }
 }

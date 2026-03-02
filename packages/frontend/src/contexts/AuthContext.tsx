@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi } from '../api/authApi';
 import { User, UserRole } from '../types/user';
+import socketService from '../services/socket.service';
 
 interface AuthContextType {
   user: User | null;
@@ -36,6 +37,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const parsedUser = JSON.parse(storedUser) as User;
         setToken(storedToken);
         setUser(parsedUser);
+
+        // Conectar WebSocket si ya hay sesión activa
+        socketService.connect(storedToken);
       } catch (error) {
         console.error('Failed to parse stored user:', error);
         localStorage.removeItem(TOKEN_KEY);
@@ -56,6 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         localStorage.setItem(TOKEN_KEY, response.data.token);
         localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+
+        // Conectar WebSocket después del login
+        socketService.connect(response.data.token);
       } else {
         throw new Error(response.error?.message || 'Login failed');
       }
@@ -66,6 +73,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = (): void => {
+    // Desconectar WebSocket
+    socketService.disconnect();
+
     setUser(null);
     setToken(null);
     localStorage.removeItem(TOKEN_KEY);

@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CardActions from '@mui/material/CardActions';
+import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Divider from '@mui/material/Divider';
@@ -21,6 +22,7 @@ import Box from '@mui/material/Box';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import NotificationList from './NotificationList';
+import { useNotifications } from 'hooks/useNotifications';
 
 // assets
 import { IconBell } from '@tabler/icons-react';
@@ -52,7 +54,10 @@ export default function NotificationSection() {
   const downMD = useMediaQuery(theme.breakpoints.down('md'));
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState('all');
+
+  // Hook de notificaciones
+  const { notifications, unreadCount, markAllAsRead, loading } = useNotifications();
 
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
@@ -82,29 +87,43 @@ export default function NotificationSection() {
     event?.target.value && setValue(event?.target.value);
   };
 
+  const handleMarkAllRead = async () => {
+    await markAllAsRead();
+  };
+
+  // Filtrar notificaciones según el estado seleccionado
+  const filteredNotifications = notifications.filter((n) => {
+    if (value === 'all') return true;
+    if (value === 'unread') return !n.read;
+    if (value === 'new') return !n.read; // Same as unread for now
+    return true;
+  });
+
   return (
     <>
       <Box sx={{ ml: 2 }}>
-        <Avatar
-          variant="rounded"
-          sx={{
-            ...theme.typography.commonAvatar,
-            ...theme.typography.mediumAvatar,
-            transition: 'all .2s ease-in-out',
-            color: theme.vars.palette.warning.dark,
-            background: theme.vars.palette.warning.light,
-            '&:hover, &[aria-controls="menu-list-grow"]': {
-              color: theme.vars.palette.warning.light,
-              background: theme.vars.palette.warning.dark
-            }
-          }}
-          ref={anchorRef}
-          aria-controls={open ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handleToggle}
-        >
-          <IconBell stroke={1.5} size="20px" />
-        </Avatar>
+        <Badge badgeContent={unreadCount} color="error">
+          <Avatar
+            variant="rounded"
+            sx={{
+              ...theme.typography.commonAvatar,
+              ...theme.typography.mediumAvatar,
+              transition: 'all .2s ease-in-out',
+              color: theme.vars.palette.warning.dark,
+              background: theme.vars.palette.warning.light,
+              '&:hover, &[aria-controls="menu-list-grow"]': {
+                color: theme.vars.palette.warning.light,
+                background: theme.vars.palette.warning.dark
+              }
+            }}
+            ref={anchorRef}
+            aria-controls={open ? 'menu-list-grow' : undefined}
+            aria-haspopup="true"
+            onClick={handleToggle}
+          >
+            <IconBell stroke={1.5} size="20px" />
+          </Avatar>
+        </Badge>
       </Box>
       <Popper
         placement={downMD ? 'bottom' : 'bottom-end'}
@@ -124,12 +143,26 @@ export default function NotificationSection() {
                     <Stack sx={{ gap: 2 }}>
                       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', pt: 2, px: 2 }}>
                         <Stack direction="row" sx={{ gap: 2 }}>
-                          <Typography variant="subtitle1">All Notification</Typography>
-                          <Chip size="small" label="01" variant="filled" sx={{ color: 'background.default', bgcolor: 'warning.dark' }} />
+                          <Typography variant="subtitle1">Notificaciones</Typography>
+                          {unreadCount > 0 && (
+                            <Chip
+                              size="small"
+                              label={unreadCount}
+                              variant="filled"
+                              sx={{ color: 'background.default', bgcolor: 'warning.dark' }}
+                            />
+                          )}
                         </Stack>
-                        <Typography component={Link} to="#" variant="subtitle2" sx={{ color: 'primary.main' }}>
-                          Mark as all read
-                        </Typography>
+                        {unreadCount > 0 && (
+                          <Typography
+                            component="span"
+                            variant="subtitle2"
+                            sx={{ color: 'primary.main', cursor: 'pointer' }}
+                            onClick={handleMarkAllRead}
+                          >
+                            Marcar todas leídas
+                          </Typography>
+                        )}
                       </Stack>
                       <Box sx={{ height: 1, maxHeight: 'calc(100vh - 205px)', overflowX: 'hidden', '&::-webkit-scrollbar': { width: 5 } }}>
                         <Box sx={{ px: 2, pt: 0.25 }}>
@@ -149,7 +182,15 @@ export default function NotificationSection() {
                           </TextField>
                         </Box>
                         <Divider sx={{ mt: 2 }} />
-                        <NotificationList />
+                        <NotificationList
+                          notifications={filteredNotifications}
+                          loading={loading}
+                          onNotificationClick={(notification) => {
+                            if (!notification.read) {
+                              // La función markAsRead ya está disponible del hook
+                            }
+                          }}
+                        />
                       </Box>
                     </Stack>
                     <CardActions sx={{ p: 1.25, justifyContent: 'center' }}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 // material-ui
 import {
@@ -23,7 +23,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tooltip
+  Tooltip,
+  TextField,
+  InputAdornment
 } from '@mui/material';
 
 // project imports
@@ -33,9 +35,10 @@ import LeadStatusChip from '../../components/leads/LeadStatusChip';
 import LeadStatusDialog from '../../components/leads/LeadStatusDialog';
 import LeadForm from './LeadForm.tsx';
 import { Lead, LeadStatus } from '../../types/lead';
+import socketService from '../../services/socket.service';
 
 // assets
-import { IconPlus, IconDots, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconPlus, IconDots, IconEdit, IconTrash, IconSearch } from '@tabler/icons-react';
 
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {
@@ -68,6 +71,42 @@ export default function LeadsList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Auto-refresh cuando llega notificación de lead
+  useEffect(() => {
+    const handleNotification = (data: any) => {
+      const notificationType = data.notification?.type;
+
+      // Si la notificación es sobre un lead, refrescar la lista
+      if (notificationType === 'LEAD_CREATED' || notificationType === 'LEAD_STATUS_CHANGED' || notificationType === 'LEAD_DELETED') {
+        console.log('📬 Notificación de lead recibida, refrescando lista...');
+        refetch();
+      }
+    };
+
+    // Escuchar notificaciones de WebSocket
+    socketService.onNotification(handleNotification);
+
+    // Cleanup
+    return () => {
+      socketService.offNotification(handleNotification);
+    };
+  }, [refetch]);
+
+  // Filtrar leads localmente según búsqueda
+  const filteredLeads = useMemo(() => {
+    if (!searchTerm.trim()) return leads;
+
+    const term = searchTerm.toLowerCase();
+    return leads.filter(
+      (lead) =>
+        lead.nombre.toLowerCase().includes(term) ||
+        lead.email.toLowerCase().includes(term) ||
+        lead.empresa.toLowerCase().includes(term) ||
+        lead.estado.toLowerCase().includes(term)
+    );
+  }, [leads, searchTerm]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, lead: Lead) => {
     setMenuAnchor(event.currentTarget);
@@ -165,6 +204,24 @@ export default function LeadsList() {
       {/* Table */}
       <Card>
         <CardContent>
+          {/* Search Bar */}
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search leads by name, email, company or status..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconSearch size={20} />
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Box>
+
           <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead>
@@ -209,16 +266,16 @@ export default function LeadsList() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {leads.length === 0 ? (
+                {filteredLeads.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <Typography variant="body2" color="textSecondary" sx={{ py: 3 }}>
-                        No leads found. Create your first lead!
+                        {searchTerm ? 'No leads found matching your search.' : 'No leads found. Create your first lead!'}
                       </Typography>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  leads.map((lead) => (
+                  filteredLeads.map((lead) => (
                     <TableRow key={lead.id} hover>
                       <TableCell>
                         <Typography variant="body1">{lead.nombre}</Typography>

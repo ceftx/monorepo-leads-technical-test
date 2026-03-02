@@ -16,7 +16,7 @@ router.use(authMiddleware);
 /**
  * POST /leads
  * #swagger.tags = ['Leads']
- * #swagger.summary = 'Crear un nuevo lead'
+ * #swagger.summary = 'Crear nuevo lead'
  * #swagger.description = 'Crea un lead. Vendedor: asignado a sí mismo. Admin: puede especificar userId'
  * #swagger.security = [{ "bearerAuth": [] }]
  * #swagger.requestBody = {
@@ -41,7 +41,7 @@ router.post("/", LeadController.create);
 /**
  * GET /leads
  * #swagger.tags = ['Leads']
- * #swagger.summary = 'Listar leads'
+ * #swagger.summary = 'Obtener todos los leads del usuario'
  * #swagger.description = 'Vendedor: solo ve sus leads. Admin: ve todos (o filtra por userId)'
  * #swagger.security = [{ "bearerAuth": [] }]
  * #swagger.parameters['userId'] = {
@@ -65,7 +65,7 @@ router.get("/:id", LeadController.getById);
 /**
  * PATCH /leads/:id/status
  * #swagger.tags = ['Leads']
- * #swagger.summary = 'Actualizar estado del lead'
+ * #swagger.summary = 'Actualizar estado de un lead'
  * #swagger.description = 'Vendedor: solo sus leads. Admin: cualquier lead'
  * #swagger.security = [{ "bearerAuth": [] }]
  * #swagger.requestBody = {

@@ -4,6 +4,7 @@ import { LeadStatus } from "../../../domain/value-objects/LeadStatus.ts";
 import { NotFoundError } from "../../../domain/errors/UserErrors.ts";
 import { UnauthorizedError } from "../../../domain/errors/AuthErrors.ts";
 import type { User } from "../../../domain/entities/User.ts";
+import { container } from "../../../shared/DependencyInjection.ts";
 
 export interface UpdateLeadStatusDTO {
     leadId: number;
@@ -27,7 +28,10 @@ export class UpdateLeadStatus {
             );
         }
 
-        // 3. Crear nueva versión del lead con el estado actualizado
+        // 3. Guardar el estado anterior para la notificación
+        const oldStatus = lead.estado;
+
+        // 4. Crear nueva versión del lead con el estado actualizado
         const updatedLead = Lead.create({
             id: lead.id,
             nombre: lead.nombre,
@@ -40,7 +44,29 @@ export class UpdateLeadStatus {
             updatedAt: new Date(), // Prisma lo actualiza automáticamente
         });
 
-        // 4. Guardar en la base de datos
-        return await this.leadRepository.update(updatedLead);
+        // 5. Guardar en la base de datos
+        const savedLead = await this.leadRepository.update(updatedLead);
+
+        // 6. Enviar notificación
+        const notificationService = container.getNotificationService();
+        if (notificationService) {
+            await notificationService.notifyLeadStatusChanged(
+                {
+                    id: savedLead.id,
+                    nombre: savedLead.nombre,
+                    empresa: savedLead.empresa,
+                    montoEstimado: savedLead.montoEstimado,
+                    userId: savedLead.userId,
+                    estado: savedLead.estado,
+                },
+                oldStatus,
+                {
+                    id: currentUser.id,
+                    nombre: currentUser.nombre,
+                },
+            );
+        }
+
+        return savedLead;
     }
 }

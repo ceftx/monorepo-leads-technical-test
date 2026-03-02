@@ -1,13 +1,18 @@
 import express, { type Application } from "express";
 import cors from "cors";
+import { Server as HTTPServer } from "http";
 import { container } from "../../../../shared/DependencyInjection.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
+import { SocketServer } from "../../../websockets/SocketServer.ts";
+import { NotificationService } from "../../../../application/services/NotificationService.ts";
+import { TelegramBotService } from "../../../telegram/TelegramBot.ts";
 
 // Importar rutas
 import authRoutes from "./routes/auth.routes.ts";
 import leadsRoutes from "./routes/leads.routes.ts";
 import usersRoutes from "./routes/users.routes.ts";
 import dashboardRoutes from "./routes/dashboard.routes.ts";
+import notificationsRoutes from "./routes/notifications.routes.ts";
 
 /**
  * Clase Server - Configuración completa del servidor Express
@@ -23,6 +28,10 @@ export class Server {
     private app: Application;
     private port: number;
     private initialized: Promise<void>;
+    private httpServer?: HTTPServer;
+    private socketServer?: SocketServer;
+    private notificationService?: NotificationService;
+    private telegramBot?: TelegramBotService;
 
     constructor(port: number = 3000) {
         this.app = express();
@@ -123,6 +132,9 @@ export class Server {
         // Rutas de dashboard (métricas)
         this.app.use(`${apiPrefix}/dashboard`, dashboardRoutes);
 
+        // Rutas de notificaciones
+        this.app.use(`${apiPrefix}/notifications`, notificationsRoutes);
+
         // Ruta 404 - Endpoint no encontrado
         this.app.use((req, res) => {
             res.status(404).json({
@@ -155,8 +167,8 @@ export class Server {
             await prisma.$connect();
             console.log("✅ Conexión a la base de datos establecida");
 
-            // Iniciar servidor HTTP
-            this.app.listen(this.port, () => {
+            // Crear HTTP Server
+            this.httpServer = this.app.listen(this.port, () => {
                 console.log("🚀 ====================================");
                 console.log(`🚀 Servidor corriendo en puerto ${this.port}`);
                 console.log(
@@ -217,6 +229,41 @@ export class Server {
                 );
                 console.log("🚀 ====================================");
             });
+
+            // Inicializar WebSocket Server
+            const corsOrigin =
+                process.env.CORS_ORIGIN ||
+                process.env.FRONTEND_URL ||
+                "http://localhost:5173";
+            this.socketServer = new SocketServer(this.httpServer!, corsOrigin);
+
+            // Inicializar Notification Service
+            this.notificationService = new NotificationService(prisma);
+            this.notificationService.setSocketEmitter((event, data) => {
+                if (this.socketServer) {
+                    this.socketServer.emitToUser(
+                        data.userId,
+                        event,
+                        data.notification,
+                    );
+                }
+            });
+
+            // Guardar en container para acceso global
+            container.setNotificationService(this.notificationService);
+
+            // Inicializar Telegram Bot
+            const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+            if (telegramToken) {
+                this.telegramBot = new TelegramBotService(
+                    telegramToken,
+                    prisma,
+                );
+            } else {
+                console.warn(
+                    "⚠️  TELEGRAM_BOT_TOKEN no configurado. Bot de Telegram desactivado.",
+                );
+            }
 
             // Manejar señales de terminación (graceful shutdown)
             this.setupGracefulShutdown();

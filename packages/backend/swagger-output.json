@@ -32,9 +32,9 @@
     }
   ],
   "paths": {
-    "/register": {
+    "/api/auth/register": {
       "post": {
-        "description": "",
+        "description": "Crea un nuevo usuario en el sistema",
         "responses": {
           "201": {
             "description": "Created"
@@ -65,12 +65,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Registrar nuevo usuario"
       }
     },
-    "/login": {
+    "/api/auth/login": {
       "post": {
-        "description": "",
+        "description": "Autentica un usuario y devuelve un token JWT",
         "responses": {
           "200": {
             "description": "OK"
@@ -95,12 +99,286 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Iniciar sesión"
       }
     },
-    "/": {
+    "/api/leads/{id}": {
+      "get": {
+        "description": "Vendedor: solo sus leads. Admin: cualquier lead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Obtener un lead por ID"
+      },
+      "delete": {
+        "description": "Vendedor: solo sus leads. Admin: cualquier lead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Eliminar un lead"
+      }
+    },
+    "/api/leads/{id}/status": {
+      "patch": {
+        "description": "Vendedor: solo sus leads. Admin: cualquier lead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "estado": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Actualizar estado de un lead"
+      }
+    },
+    "/api/users/{id}": {
+      "delete": {
+        "description": "Elimina un usuario del sistema",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "summary": "Eliminar un usuario (solo ADMIN)"
+      }
+    },
+    "/api/dashboard/user": {
+      "get": {
+        "description": "Devuelve estadísticas y métricas del usuario actual",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Obtener métricas del usuario autenticado"
+      }
+    },
+    "/api/dashboard/user/{id}": {
+      "get": {
+        "description": "Devuelve estadísticas de un usuario específico",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Obtener métricas de un usuario específico (solo ADMIN)"
+      }
+    },
+    "/api/dashboard/global": {
+      "get": {
+        "description": "Devuelve estadísticas globales y ranking de vendedores",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Obtener métricas globales del sistema (solo ADMIN)"
+      }
+    },
+    "/api/leads": {
       "post": {
-        "description": "",
+        "description": "Crea un lead. Vendedor: asignado a sí mismo. Admin: puede especificar userId",
         "parameters": [
           {
             "name": "authorization",
@@ -149,14 +427,25 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Crear nuevo lead"
       },
       "get": {
-        "description": "",
+        "description": "Vendedor: solo ve sus leads. Admin: ve todos (o filtra por userId)",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -165,118 +454,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/{id}/status": {
-      "patch": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -285,25 +462,15 @@
             "description": "Internal Server Error"
           }
         },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "estado": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Obtener todos los leads del usuario"
       }
     },
-    "/user": {
+    "/api/users": {
       "get": {
-        "description": "",
+        "description": "Lista todos los usuarios del sistema",
         "parameters": [
           {
             "name": "authorization",
@@ -323,65 +490,11 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
-      }
-    },
-    "/user/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
+        },
+        "tags": [
+          "Users"
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/global": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
+        "summary": "Obtener todos los usuarios (solo ADMIN)"
       }
     }
   },

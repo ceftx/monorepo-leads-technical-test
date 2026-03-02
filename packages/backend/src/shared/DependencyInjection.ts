@@ -13,6 +13,7 @@ import { GetUserMetrics } from "../application/use-cases/dashboard/GetUserMetric
 import { GetGlobalMetrics } from "../application/use-cases/dashboard/GetGlobalMetrics.js";
 import type { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import type { ILeadRepository } from "../domain/repositories/ILeadRepository.js";
+import type { NotificationService } from "../application/services/NotificationService.js";
 
 /**
  * Contenedor de Inyección de Dependencias (DI Container)
@@ -33,6 +34,7 @@ export class DependencyContainer {
     // === Services ===
     private readonly bcryptService: BcryptService;
     private readonly jwtService: JwtService;
+    private notificationService?: NotificationService; // Optional, set later
 
     // === Use Cases - Auth ===
     private readonly registerUserUseCase: RegisterUser;
@@ -122,6 +124,14 @@ export class DependencyContainer {
 
     getJwtService(): JwtService {
         return this.jwtService;
+    }
+
+    setNotificationService(service: NotificationService): void {
+        this.notificationService = service;
+    }
+
+    getNotificationService(): NotificationService | undefined {
+        return this.notificationService;
     }
 
     // === Getters - Use Cases: Auth ===

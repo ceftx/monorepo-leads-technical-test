@@ -26,7 +26,12 @@ export default defineConfig(({ mode }) => {
     preview: {
       open: true,
       host: true,
-      port: PORT
+      port: PORT,
+      allowedHosts: [
+        'localhost',
+        '.railway.app', // Permite todos los subdominios de railway.app
+        'monorepo-leads-technical-front-production.up.railway.app'
+      ]
     },
     define: {
       global: 'window'

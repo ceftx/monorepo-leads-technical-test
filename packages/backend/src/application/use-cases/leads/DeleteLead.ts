@@ -2,6 +2,7 @@ import type { ILeadRepository } from "../../../domain/repositories/ILeadReposito
 import { NotFoundError } from "../../../domain/errors/UserErrors.ts";
 import { UnauthorizedError } from "../../../domain/errors/AuthErrors.ts";
 import type { User } from "../../../domain/entities/User.ts";
+import { container } from "../../../shared/DependencyInjection.ts";
 
 export interface DeleteLeadDTO {
     leadId: number;
@@ -24,7 +25,28 @@ export class DeleteLead {
             );
         }
 
-        // 3. Eliminar de la base de datos
+        // 3. Guardar información del lead para la notificación
+        const leadInfo = {
+            id: lead.id,
+            nombre: lead.nombre,
+            empresa: lead.empresa,
+        };
+
+        // 4. Eliminar de la base de datos
         await this.leadRepository.delete(data.leadId);
+
+        // 5. Enviar notificación
+        const notificationService = container.getNotificationService();
+        if (notificationService) {
+            await notificationService.notifyLeadDeleted(
+                leadInfo.id,
+                leadInfo.nombre,
+                leadInfo.empresa,
+                {
+                    id: currentUser.id,
+                    nombre: currentUser.nombre,
+                },
+            );
+        }
     }
 }
