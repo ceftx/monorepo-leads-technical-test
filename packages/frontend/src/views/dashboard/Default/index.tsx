@@ -25,6 +25,7 @@ import { useDashboard } from '../../../hooks/useDashboard';
 import { useAuth } from '../../../contexts/AuthContext';
 import { LeadStatus } from '../../../types/lead';
 import { GlobalMetrics } from '../../../types/api';
+import { useTranslation } from 'i18n';
 
 // assets
 import { IconFileDescription, IconCurrencyDollar, IconTrendingUp, IconChartPie, IconTrophy } from '@tabler/icons-react';
@@ -49,7 +50,7 @@ const getStatusColor = (status: LeadStatus): 'default' | 'primary' | 'success' |
 const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
-    currency: 'ARS',
+    currency: 'USD',
     minimumFractionDigits: 0
   }).format(amount);
 };
@@ -60,6 +61,7 @@ export default function Dashboard() {
   const theme = useTheme();
   const { user, isAdmin } = useAuth();
   const { metrics, loading, error, refetch } = useDashboard();
+  const { t } = useTranslation();
 
   useEffect(() => {
     refetch();
@@ -85,7 +87,7 @@ export default function Dashboard() {
   if (!metrics) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="info">No metrics available</Alert>
+        <Alert severity="info">{t('dashboard.noMetricsAvailable')}</Alert>
       </Box>
     );
   }
@@ -98,10 +100,10 @@ export default function Dashboard() {
       {/* Header */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h2" sx={{ mb: 1 }}>
-          {isAdmin ? 'Global Dashboard' : 'My Dashboard'}
+          {isAdmin ? t('dashboard.globalDashboard') : t('dashboard.myDashboard')}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          Welcome back, {user?.nombre}!
+          {t('dashboard.welcomeBack')} {user?.nombre}!
         </Typography>
       </Box>
 
@@ -113,7 +115,7 @@ export default function Dashboard() {
             <Stack direction="row" alignItems="center" justifyContent="space-between">
               <Box>
                 <Typography variant="h6" color="textSecondary">
-                  Total Leads
+                  {t('dashboard.totalLeads')}
                 </Typography>
                 <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
                   {metrics.totalLeads}
@@ -142,7 +144,7 @@ export default function Dashboard() {
             <Stack direction="row" alignItems="center" justifyContent="space-between">
               <Box>
                 <Typography variant="h6" color="textSecondary">
-                  Total Amount
+                  {t('dashboard.totalAmount')}
                 </Typography>
                 <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
                   {formatCurrency(metrics.montoEstimadoTotal)}
@@ -171,7 +173,7 @@ export default function Dashboard() {
             <Stack direction="row" alignItems="center" justifyContent="space-between">
               <Box>
                 <Typography variant="h6" color="textSecondary">
-                  Last 7 Days
+                  {t('dashboard.last7Days')}
                 </Typography>
                 <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
                   {metrics.leadsUltimos7Dias}
@@ -201,7 +203,7 @@ export default function Dashboard() {
               <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <Box>
                   <Typography variant="h6" color="textSecondary">
-                    Total Users
+                    {t('dashboard.totalUsers')}
                   </Typography>
                   <Typography variant="h3" sx={{ mt: 1, fontWeight: 700 }}>
                     {globalMetrics.totalUsuarios}
@@ -231,13 +233,13 @@ export default function Dashboard() {
         <CardContent>
           <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
             <IconChartPie size={24} color={theme.palette.primary.main} />
-            <Typography variant="h4">Distribution by Status</Typography>
+            <Typography variant="h4">{t('dashboard.distributionByStatus')}</Typography>
           </Stack>
           <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
             {metrics.distribucionPorEstado.map((item, index) => (
               <Chip
                 key={index}
-                label={`${item.estado}: ${item.cantidad}`}
+                label={`${t(`leads.status.${item.estado}`)}: ${item.cantidad}`}
                 color={getStatusColor(item.estado)}
                 sx={{ fontSize: '0.875rem', fontWeight: 500 }}
               />
@@ -252,7 +254,7 @@ export default function Dashboard() {
           <CardContent>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <IconTrophy size={24} color={theme.palette.primary.main} />
-              <Typography variant="h4">Top Vendors by Revenue</Typography>
+              <Typography variant="h4">{t('dashboard.topVendorsByRevenue')}</Typography>
             </Stack>
             <TableContainer component={Paper} variant="outlined">
               <Table>
@@ -260,22 +262,22 @@ export default function Dashboard() {
                   <TableRow>
                     <TableCell>
                       <Typography variant="subtitle1" fontWeight={600}>
-                        Rank
+                        {t('dashboard.rank')}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle1" fontWeight={600}>
-                        Vendor
+                        {t('dashboard.vendor')}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="subtitle1" fontWeight={600}>
-                        Won Leads
+                        {t('dashboard.wonLeads')}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="subtitle1" fontWeight={600}>
-                        Revenue
+                        {t('dashboard.revenue')}
                       </Typography>
                     </TableCell>
                   </TableRow>

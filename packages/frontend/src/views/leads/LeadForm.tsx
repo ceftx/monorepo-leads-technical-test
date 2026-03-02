@@ -163,7 +163,7 @@ export default function LeadForm({ open, onClose, onSuccess, lead }: LeadFormPro
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Estimated Amount (ARS)"
+                  label="Estimated Amount (USD)"
                   type="number"
                   fullWidth
                   error={!!errors.montoEstimado}

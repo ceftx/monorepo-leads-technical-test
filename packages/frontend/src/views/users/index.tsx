@@ -30,6 +30,7 @@ import { useSnackbar } from '../../contexts/SnackbarContext';
 import UserRoleChip from '../../components/users/UserRoleChip';
 import UserForm from './UserForm';
 import { User } from '../../types/user';
+import { useTranslation } from 'i18n';
 
 // assets
 import { IconPlus, IconTrash } from '@tabler/icons-react';
@@ -51,6 +52,7 @@ export default function UsersList() {
   const { users, loading, error, deleteUser, refetch } = useUsers();
   const { user: currentUser } = useAuth();
   const { showSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const [formOpen, setFormOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -70,10 +72,10 @@ export default function UsersList() {
         await deleteUser(selectedUser.id);
         setDeleteDialogOpen(false);
         setSelectedUser(null);
-        showSnackbar('User deleted successfully', 'success');
+        showSnackbar(t('users.userDeleted'), 'success');
       } catch (err: any) {
         console.error('Error deleting user:', err);
-        setDeleteError(err?.response?.data?.error?.message || 'Failed to delete user. Please try again.');
+        setDeleteError(err?.response?.data?.error?.message || t('messages.serverError'));
       }
     }
   };
@@ -107,9 +109,9 @@ export default function UsersList() {
     <Box>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h2">Users Management</Typography>
+        <Typography variant="h2">{t('users.title')}</Typography>
         <Button variant="contained" startIcon={<IconPlus />} onClick={() => setFormOpen(true)}>
-          New User
+          {t('users.newUser')}
         </Button>
       </Box>
 
@@ -122,27 +124,27 @@ export default function UsersList() {
                 <TableRow>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Name
+                      {t('common.name')}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Email
+                      {t('common.email')}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Role
+                      {t('users.role')}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Created
+                      {t('users.createdAt')}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Actions
+                      {t('common.actions')}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -152,7 +154,7 @@ export default function UsersList() {
                   <TableRow>
                     <TableCell colSpan={5} align="center">
                       <Typography variant="body2" color="textSecondary" sx={{ py: 3 }}>
-                        No users found.
+                        {t('users.noUsers')}
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -177,12 +179,12 @@ export default function UsersList() {
                       </TableCell>
                       <TableCell align="center">
                         {user.id !== currentUser?.id ? (
-                          <IconButton size="small" color="error" onClick={() => handleDeleteClick(user)} title="Delete user">
+                          <IconButton size="small" color="error" onClick={() => handleDeleteClick(user)} title={t('common.delete')}>
                             <IconTrash />
                           </IconButton>
                         ) : (
                           <Typography variant="caption" color="textSecondary">
-                            (You)
+                            (Tú)
                           </Typography>
                         )}
                       </TableCell>
@@ -197,21 +199,19 @@ export default function UsersList() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete User</DialogTitle>
+        <DialogTitle>{t('users.deleteUser')}</DialogTitle>
         <DialogContent>
           {deleteError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {deleteError}
             </Alert>
           )}
-          <Typography>
-            Are you sure you want to delete the user <strong>{selectedUser?.nombre}</strong>? This action cannot be undone.
-          </Typography>
+          <Typography>{t('users.deleteConfirm')}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setDeleteDialogOpen(false)}>{t('common.cancel')}</Button>
           <Button onClick={handleDeleteConfirm} color="error" variant="contained">
-            Delete
+            {t('common.delete')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -10,7 +10,7 @@ const leads = {
   children: [
     {
       id: 'leads-list',
-      title: 'Manage Leads',
+      title: 'Gestionar Leads',
       type: 'item',
       url: '/leads',
       icon: IconFileDescription,

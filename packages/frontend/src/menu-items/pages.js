@@ -10,27 +10,27 @@ const icons = {
 
 const pages = {
   id: 'pages',
-  title: 'Pages',
-  caption: 'Pages Caption',
+  title: 'Páginas',
+  caption: 'Páginas Caption',
   icon: icons.IconKey,
   type: 'group',
   children: [
     {
       id: 'authentication',
-      title: 'Authentication',
+      title: 'Autenticación',
       type: 'collapse',
       icon: icons.IconKey,
       children: [
         {
           id: 'login',
-          title: 'Login',
+          title: 'Iniciar Sesión',
           type: 'item',
           url: '/pages/login',
           target: true
         },
         {
           id: 'register',
-          title: 'Register',
+          title: 'Registrarse',
           type: 'item',
           url: '/pages/register',
           target: true

@@ -36,6 +36,7 @@ import LeadStatusDialog from '../../components/leads/LeadStatusDialog';
 import LeadForm from './LeadForm.tsx';
 import { Lead, LeadStatus } from '../../types/lead';
 import socketService from '../../services/socket.service';
+import { useTranslation } from 'i18n';
 
 // assets
 import { IconPlus, IconDots, IconEdit, IconTrash, IconSearch } from '@tabler/icons-react';
@@ -44,7 +45,7 @@ import { IconPlus, IconDots, IconEdit, IconTrash, IconSearch } from '@tabler/ico
 const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
-    currency: 'ARS',
+    currency: 'USD',
     minimumFractionDigits: 0
   }).format(amount);
 };
@@ -63,6 +64,7 @@ const formatDate = (dateString: string): string => {
 export default function LeadsList() {
   const { leads, loading, error, updateLeadStatus, deleteLead, refetch } = useLeads();
   const { showSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
@@ -137,10 +139,10 @@ export default function LeadsList() {
         await deleteLead(selectedLead.id);
         setDeleteDialogOpen(false);
         setSelectedLead(null);
-        showSnackbar('Lead deleted successfully', 'success');
+        showSnackbar(t('leads.leadDeleted'), 'success');
       } catch (err: any) {
         console.error('Error deleting lead:', err);
-        setDeleteError(err?.response?.data?.error?.message || 'Failed to delete lead. Please try again.');
+        setDeleteError(err?.response?.data?.error?.message || t('messages.serverError'));
       }
     }
   };
@@ -156,10 +158,10 @@ export default function LeadsList() {
         await updateLeadStatus(selectedLead.id, newStatus);
         setStatusDialogOpen(false);
         setSelectedLead(null);
-        showSnackbar('Lead status updated successfully', 'success');
+        showSnackbar(t('leads.leadUpdated'), 'success');
       } catch (err: any) {
         console.error('Error updating status:', err);
-        showSnackbar(err?.response?.data?.error?.message || 'Failed to update status', 'error');
+        showSnackbar(err?.response?.data?.error?.message || t('messages.serverError'), 'error');
         setStatusDialogOpen(false);
       }
     }
@@ -195,9 +197,9 @@ export default function LeadsList() {
     <Box>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h2">Leads</Typography>
+        <Typography variant="h2">{t('leads.title')}</Typography>
         <Button variant="contained" startIcon={<IconPlus />} onClick={() => setFormOpen(true)}>
-          New Lead
+          {t('leads.newLead')}
         </Button>
       </Box>
 
@@ -209,7 +211,7 @@ export default function LeadsList() {
             <TextField
               fullWidth
               size="small"
-              placeholder="Search leads by name, email, company or status..."
+              placeholder={t('leads.searchLeads')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -228,39 +230,39 @@ export default function LeadsList() {
                 <TableRow>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Name
+                      {t('common.name')}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Email
+                      {t('common.email')}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Company
+                      {t('leads.company')}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Estimated Amount
+                      {t('leads.estimatedAmount')}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Tooltip title="Click on status to change it" arrow placement="top">
+                    <Tooltip title={t('leads.statusTooltip')} arrow placement="top">
                       <Typography variant="subtitle1" fontWeight={600} sx={{ cursor: 'help' }}>
-                        Status
+                        {t('common.status')}
                       </Typography>
                     </Tooltip>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Created
+                      {t('leads.createdAt')}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Actions
+                      {t('common.actions')}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -270,7 +272,7 @@ export default function LeadsList() {
                   <TableRow>
                     <TableCell colSpan={7} align="center">
                       <Typography variant="body2" color="textSecondary" sx={{ py: 3 }}>
-                        {searchTerm ? 'No leads found matching your search.' : 'No leads found. Create your first lead!'}
+                        {searchTerm ? t('leads.noLeadsSearch') : t('leads.noLeads')}
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -297,8 +299,8 @@ export default function LeadsList() {
                         <Tooltip
                           title={
                             lead.estado === LeadStatus.GANADO || lead.estado === LeadStatus.PERDIDO
-                              ? 'Final status - cannot be changed'
-                              : 'Click to change status'
+                              ? t('leads.statusFinal')
+                              : t('leads.statusChange')
                           }
                           arrow
                         >
@@ -330,11 +332,11 @@ export default function LeadsList() {
       <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
         <MenuItem onClick={handleEdit}>
           <IconEdit size={18} style={{ marginRight: 8 }} />
-          Edit
+          {t('common.edit')}
         </MenuItem>
         <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
           <IconTrash size={18} style={{ marginRight: 8 }} />
-          Delete
+          {t('common.delete')}
         </MenuItem>
       </Menu>
 
@@ -349,21 +351,19 @@ export default function LeadsList() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Lead</DialogTitle>
+        <DialogTitle>{t('leads.deleteLead')}</DialogTitle>
         <DialogContent>
           {deleteError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {deleteError}
             </Alert>
           )}
-          <Typography>
-            Are you sure you want to delete the lead <strong>{selectedLead?.nombre}</strong>? This action cannot be undone.
-          </Typography>
+          <Typography>{t('leads.deleteConfirm')}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setDeleteDialogOpen(false)}>{t('common.cancel')}</Button>
           <Button onClick={handleDeleteConfirm} color="error" variant="contained">
-            Delete
+            {t('common.delete')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -19,6 +19,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import CustomFormControl from 'ui-component/extended/Form/CustomFormControl';
 import { useAuth } from 'contexts/AuthContext';
+import { useTranslation } from 'i18n';
 
 // assets
 import Visibility from '@mui/icons-material/Visibility';
@@ -26,8 +27,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 // Validation schema
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email('Correo electrónico inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
   rememberMe: z.boolean().optional()
 });
 
@@ -38,6 +39,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function AuthLogin() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +78,7 @@ export default function AuthLogin() {
       navigate('/dashboard');
     } catch (err: any) {
       console.error('❌ Login error:', err);
-      const error = err?.response?.data?.error?.message || 'Invalid email or password';
+      const error = err?.response?.data?.error?.message || t('auth.loginError');
       console.log('📢 Mostrando error:', error);
       setErrorMessage(error);
       console.log('📢 ErrorMessage seteado, esperando render...');
@@ -109,7 +111,7 @@ export default function AuthLogin() {
         control={control}
         render={({ field }) => (
           <CustomFormControl fullWidth error={!!errors.email}>
-            <InputLabel htmlFor="outlined-adornment-email-login">Email Address</InputLabel>
+            <InputLabel htmlFor="outlined-adornment-email-login">{t('auth.email')}</InputLabel>
             <OutlinedInput
               {...field}
               id="outlined-adornment-email-login"
@@ -127,7 +129,7 @@ export default function AuthLogin() {
         control={control}
         render={({ field }) => (
           <CustomFormControl fullWidth error={!!errors.password}>
-            <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
+            <InputLabel htmlFor="outlined-adornment-password-login">{t('auth.password')}</InputLabel>
             <OutlinedInput
               {...field}
               id="outlined-adornment-password-login"
@@ -147,7 +149,7 @@ export default function AuthLogin() {
                   </IconButton>
                 </InputAdornment>
               }
-              label="Password"
+              label={t('auth.password')}
             />
             {errors.password && <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5 }}>{errors.password.message}</Box>}
           </CustomFormControl>
@@ -160,7 +162,7 @@ export default function AuthLogin() {
         render={({ field }) => (
           <FormControlLabel
             control={<Checkbox {...field} checked={field.value} color="primary" disabled={isLoading} />}
-            label="Keep me logged in"
+            label={t('auth.rememberMe')}
           />
         )}
       />
@@ -168,7 +170,7 @@ export default function AuthLogin() {
       <Box sx={{ mt: 2 }}>
         <AnimateButton>
           <Button color="secondary" fullWidth size="large" type="submit" variant="contained" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : t('auth.signIn')}
           </Button>
         </AnimateButton>
       </Box>

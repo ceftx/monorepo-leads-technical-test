@@ -5,13 +5,13 @@ import { IconUsers } from '@tabler/icons-react';
 
 const users = {
   id: 'users',
-  title: 'Admin',
+  title: 'Administración',
   type: 'group',
   adminOnly: true, // Solo visible para admin
   children: [
     {
       id: 'users-list',
-      title: 'Users Management',
+      title: 'Gestión de Usuarios',
       type: 'item',
       url: '/users',
       icon: IconUsers,
