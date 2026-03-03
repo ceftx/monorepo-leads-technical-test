@@ -7,9 +7,9 @@ const doc = {
             "API para gestión de leads con autenticación JWT y roles (ADMIN/VENDEDOR)",
         version: "1.0.0",
     },
-    host: "monorepo-leads-technical-back-production.up.railway.app", // Cambia al host de tu backend
+    host: "monorepo-leads-technical-back-production.up.railway.app",
     basePath: "/api",
-    schemes: ["http", "https"],
+    schemes: ["https"],
     consumes: ["application/json"],
     produces: ["application/json"],
     tags: [
@@ -68,6 +68,9 @@ const doc = {
         LoginRequest: {
             $email: "user@example.com",
             $password: "password123",
+        },
+        RefreshTokenRequest: {
+            $token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
         },
         LoginResponse: {
             token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
