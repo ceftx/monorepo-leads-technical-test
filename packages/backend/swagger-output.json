@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://monorepo-leads-technical-back-production.up.railway.app/api"
+      "url": "https://monorepo-leads-technical-back-production.up.railway.app"
     }
   ],
   "tags": [
