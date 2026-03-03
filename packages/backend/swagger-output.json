@@ -105,7 +105,7 @@
     },
     "/api/auth/refresh": {
       "post": {
-        "description": "",
+        "description": "Recibe un token vigente y devuelve uno nuevo",
         "responses": {
           "200": {
             "description": "OK"
@@ -130,7 +130,11 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Renovar token JWT"
       }
     },
     "/api/leads/{id}": {
@@ -176,7 +180,7 @@
         "summary": "Obtener un lead por ID"
       },
       "put": {
-        "description": "",
+        "description": "Vendedor: solo sus leads. Admin: cualquier lead",
         "parameters": [
           {
             "name": "id",
@@ -230,7 +234,11 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Actualizar lead completo"
       },
       "delete": {
         "description": "Vendedor: solo sus leads. Admin: cualquier lead",

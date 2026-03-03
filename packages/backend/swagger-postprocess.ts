@@ -27,6 +27,13 @@ const endpointMetadata: Record<
             description: "Autentica un usuario y devuelve un token JWT",
         },
     },
+    "/api/auth/refresh": {
+        post: {
+            tags: ["Auth"],
+            summary: "Renovar token JWT",
+            description: "Recibe un token vigente y devuelve uno nuevo",
+        },
+    },
     "/api/leads/": {
         post: {
             tags: ["Leads"],
@@ -45,6 +52,11 @@ const endpointMetadata: Record<
         get: {
             tags: ["Leads"],
             summary: "Obtener un lead por ID",
+            description: "Vendedor: solo sus leads. Admin: cualquier lead",
+        },
+        put: {
+            tags: ["Leads"],
+            summary: "Actualizar lead completo",
             description: "Vendedor: solo sus leads. Admin: cualquier lead",
         },
         delete: {
