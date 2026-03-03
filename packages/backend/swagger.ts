@@ -7,7 +7,7 @@ const doc = {
             "API para gestión de leads con autenticación JWT y roles (ADMIN/VENDEDOR)",
         version: "1.0.0",
     },
-    host: ["monorepo-leads-technical-back-production.up.railway.app"], // Cambia al host de tu backend
+    host: "monorepo-leads-technical-back-production.up.railway.app", // Cambia al host de tu backend
     basePath: "/api",
     schemes: ["http", "https"],
     consumes: ["application/json"],
