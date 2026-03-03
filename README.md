@@ -215,6 +215,12 @@ Compartir tipos entre frontend/backend, versionado único, deploy coordinado.
 **¿Por qué tsx en producción (backend)?**  
 Prisma usa `require()` dinámico que no se puede bundlear. `tsx` evita problemas de compatibilidad ESM.
 
+## 🗺️ Roadmap
+
+Ver [ROADMAP.md](./ROADMAP.md) para funcionalidades planned y mejoras pendientes.
+
+---
+
 ## 📄 Licencia
 
 MIT
