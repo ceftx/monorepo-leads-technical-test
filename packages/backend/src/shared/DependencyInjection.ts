@@ -5,6 +5,7 @@ import { BcryptService } from "../infrastructure/out/auth/BcryptService.js";
 import { JwtService } from "../infrastructure/out/auth/JwtService.js";
 import { RegisterUser } from "../application/use-cases/auth/RegisterUser.js";
 import { LoginUser } from "../application/use-cases/auth/LoginUser.js";
+import { RefreshToken } from "../application/use-cases/auth/RefreshToken.js";
 import { CreateLead } from "../application/use-cases/leads/CreateLead.js";
 import { GetLeadsByUser } from "../application/use-cases/leads/GetLeadsByUser.js";
 import { UpdateLead } from "../application/use-cases/leads/UpdateLead.js";
@@ -40,6 +41,7 @@ export class DependencyContainer {
     // === Use Cases - Auth ===
     private readonly registerUserUseCase: RegisterUser;
     private readonly loginUserUseCase: LoginUser;
+    private readonly refreshTokenUseCase: RefreshToken;
 
     // === Use Cases - Leads ===
     private readonly createLeadUseCase: CreateLead;
@@ -76,6 +78,11 @@ export class DependencyContainer {
         this.loginUserUseCase = new LoginUser(
             this.userRepository,
             this.bcryptService,
+            this.jwtService,
+        );
+
+        this.refreshTokenUseCase = new RefreshToken(
+            this.userRepository,
             this.jwtService,
         );
 
@@ -148,6 +155,10 @@ export class DependencyContainer {
 
     getLoginUserUseCase(): LoginUser {
         return this.loginUserUseCase;
+    }
+
+    getRefreshTokenUseCase(): RefreshToken {
+        return this.refreshTokenUseCase;
     }
 
     // === Getters - Use Cases: Leads ===

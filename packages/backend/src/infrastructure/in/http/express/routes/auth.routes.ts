@@ -71,4 +71,36 @@ router.post("/register", AuthController.register);
  */
 router.post("/login", AuthController.login);
 
+/**
+ * POST /auth/refresh
+ * #swagger.tags = ['Auth']
+ * #swagger.summary = 'Renovar token JWT'
+ * #swagger.description = 'Recibe un token vigente y devuelve uno nuevo'
+ * #swagger.requestBody = {
+ *   required: true,
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/RefreshTokenRequest" }
+ *     }
+ *   }
+ * }
+ * #swagger.responses[200] = {
+ *   description: 'Token renovado exitosamente',
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/LoginResponse" }
+ *     }
+ *   }
+ * }
+ * #swagger.responses[401] = {
+ *   description: 'Token inválido o expirado',
+ *   content: {
+ *     "application/json": {
+ *       schema: { $ref: "#/components/schemas/Error" }
+ *     }
+ *   }
+ * }
+ */
+router.post("/refresh", AuthController.refreshToken);
+
 export default router;

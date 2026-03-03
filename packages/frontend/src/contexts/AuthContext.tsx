@@ -50,6 +50,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // Escuchar eventos de logout desde el interceptor
+  useEffect(() => {
+    const handleLogout = () => {
+      socketService.disconnect();
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+    };
+
+    window.addEventListener('auth:logout', handleLogout);
+    return () => window.removeEventListener('auth:logout', handleLogout);
+  }, []);
+
   const login = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authApi.login({ email, password });

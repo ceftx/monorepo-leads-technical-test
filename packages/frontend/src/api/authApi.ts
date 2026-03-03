@@ -11,5 +11,10 @@ export const authApi = {
   register: async (userData: CreateUserDto) => {
     const response = await axiosInstance.post<ApiResponse<{ user: User }>>('/auth/register', userData);
     return response.data;
+  },
+
+  refreshToken: async (token: string) => {
+    const response = await axiosInstance.post<ApiResponse<LoginResponse>>('/auth/refresh', { token });
+    return response.data;
   }
 };
