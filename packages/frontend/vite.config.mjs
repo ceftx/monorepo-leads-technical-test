@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
       allowedHosts: [
         'localhost',
         '.railway.app', // Permite todos los subdominios de railway.app
-        'monorepo-leads-technical-front-production.up.railway.app'
+        'monorepo-leads-technical-front-production.up.railway.app',
         'uabtbbz2y5ttuizom35rfbpf.31.220.98.106.sslip.io'
       ]
     },
